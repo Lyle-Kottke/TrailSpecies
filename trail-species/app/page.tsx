@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = 'https://gekfsmszhksgummssklg.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function HomePage() {
   const [query, setQuery] = useState("");
