@@ -1,16 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/utils/supabase/client'
+import Link from 'next/link'
 
-const supabaseUrl = 'https://gekfsmszhksgummssklg.supabase.co'
-const supabaseKey = process.env.SUPABASE_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function HomePage() {
   const [query, setQuery] = useState("");
   const router = useRouter();
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (data?.user) {
+        setUser(data.user)
+      }
+    })
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,6 +27,7 @@ export default function HomePage() {
 
   return (
   <div className="flex flex-col items-center justify-center min-h-screen p-8" style={{ backgroundColor: "#0a0a0a" }}>
+      
       {/* Title */}
       <h1 className="text-5xl font-bold mb-4">
         Trail Species
@@ -48,6 +57,17 @@ export default function HomePage() {
           Search
         </button>
       </form>
+      <div className="mt-8 text-gray-500">
+        {user ? (// EXAMPLE USAGE, DELETE IF NEEDED
+          <h1>Welcome, {user.email}!</h1>
+        ) : (
+          <div>
+            <h1>Log in if you want to save trails.</h1>
+          </div>
+        )}
+      </div>
+
+      
     </div>
   );
 }
