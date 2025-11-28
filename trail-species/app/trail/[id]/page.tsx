@@ -114,6 +114,10 @@ useEffect(() => {
       <h1 className="text-3xl font-bold mt-4">{trail.name}</h1>
       <p className="text-gray-500 mb-6">{trail.trailtype}</p>
 
+      <h2 className="text-2xl font-semibold mb-4">Map</h2>
+
+      
+
       <h2 className="text-2xl font-semibold mb-4">Species Found Here</h2>
       {!species ? (
         <p>Loading species...</p>
