@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -24,8 +25,8 @@ export default function Map({ geometry, height = "400px"}: MapProps) {
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: "mapbox://styles/mapbox/outdoors-v12",
-      center: [-98.5795, 39.8283],
-      zoom: 10,
+      center: [-71.10469607956415, 42.332211512677],
+      zoom: 50,
     });
 
     mapRef.current = map;
@@ -33,12 +34,11 @@ export default function Map({ geometry, height = "400px"}: MapProps) {
     map.on("load", () => {
       console.log("Mapbox loaded");
 
+      console.log(geometry)
+      
       map.addSource("trail", {
         type: "geojson",
-        data: {
-          type: "Feature",
-          geometry,
-        },
+        data: geometry,
       });
 
       map.addLayer({

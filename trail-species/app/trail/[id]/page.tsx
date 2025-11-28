@@ -45,7 +45,7 @@ export default function TrailPage() {
           name: props.name,
           trailtype: props.trailtype,
           lengthmiles: props.lengthmiles,
-          geometry: feature.geometry,
+          geometry: geojson,
         });
       } catch (err: any) {
         console.error(err);
