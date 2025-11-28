@@ -5,6 +5,9 @@ import { useSearchParams, useParams } from "next/navigation";
 import Image from "next/image";
 import SpeciesPopup from "@/components/SpeciesPopup";
 
+import dynamic from "next/dynamic";
+const Map = dynamic(() => import("@/components/Map"), { ssr: false });
+
 export default function TrailPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -30,6 +33,7 @@ export default function TrailPage() {
         );
 
         const raw = await res.json();
+
         // Backend returns JSON string → parse it
         const geojson = typeof raw === "string" ? JSON.parse(raw) : raw;
         const feature = geojson.features?.[0];
@@ -115,8 +119,8 @@ useEffect(() => {
       <p className="text-gray-500 mb-6">{trail.trailtype}</p>
 
       <h2 className="text-2xl font-semibold mb-4">Map</h2>
-
       
+      <Map geometry={trail.geometry} />
 
       <h2 className="text-2xl font-semibold mb-4">Species Found Here</h2>
       {!species ? (
