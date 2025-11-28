@@ -25,8 +25,8 @@ export default function Map({ geometry, height = "400px"}: MapProps) {
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: "mapbox://styles/mapbox/outdoors-v12",
-      center: [-71.10469607956415, 42.332211512677],
-      zoom: 50,
+      center: [-71.925543154266, 42.38103835124582],
+      zoom: 7,
     });
 
     mapRef.current = map;
@@ -41,25 +41,47 @@ export default function Map({ geometry, height = "400px"}: MapProps) {
         data: geometry,
       });
 
+
+      // Outline layer (bottom)
+      map.addLayer({
+        id: "trail-line-outline",
+        type: "line",
+        source: "trail",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+        },
+        paint: {
+          "line-color": "#003322",
+          "line-width": 8,
+        },
+      });
+
+      // Main line (top)
       map.addLayer({
         id: "trail-line",
         type: "line",
         source: "trail",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+        },
         paint: {
           "line-color": "#00aa55",
           "line-width": 6,
         },
       });
 
+
       const bounds = new mapboxgl.LngLatBounds();
 
-      try {
-        // @ts-ignore
-        geometry.coordinates.forEach((coord: any) => {
-          if (Array.isArray(coord)) bounds.extend(coord);
-        });
 
-        map.fitBounds(bounds, { padding: 40 });
+      try { //zoom to trail
+        map.flyTo({
+          center: geometry.features[0].geometry.coordinates[0], // The longitude and latitude of the point
+          zoom: 14, // The desired zoom level (adjust as needed)
+          essential: true // This ensures the animation plays even if the user interacts with the map
+        });
       } catch (err) {
         console.error("Bounds error:", err);
       }
