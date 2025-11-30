@@ -15,9 +15,18 @@ type SpeciesPopupProps = {
 
 export default function SpeciesPopup({ species, onClose }: SpeciesPopupProps) {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="rounded-xl shadow-xl max-w-lg w-full p-6 relative" style={{ backgroundColor: "#0a0a0a" }}>
-        {/* Close button */}
+    //backdrop (clicking closes modal)
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      {/* modal */}
+      <div
+        className="rounded-xl shadow-xl max-w-lg w-full p-6 relative"
+        style={{ backgroundColor: "#0a0a0a" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* close button */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-white hover:text-gray-500"
@@ -37,8 +46,8 @@ export default function SpeciesPopup({ species, onClose }: SpeciesPopupProps) {
         {/* Species name */}
         <h2 className="text-2xl font-bold mb-2">{species.name}</h2>
 
-        {/* Description */}
-        <p className="text-gray-700">{species.description}</p>
+        {/* description */}
+        <p className="text-gray-400">{species.description}</p>
       </div>
     </div>
   );

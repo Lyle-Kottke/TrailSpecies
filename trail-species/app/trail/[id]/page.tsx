@@ -64,7 +64,6 @@ useEffect(() => {
 
   const fetchSpecies = async () => {
     try {
-      // Get current month (1-12)
       const currentMonth = new Date().getMonth() + 1;
 
       const res = await fetch(
@@ -76,25 +75,51 @@ useEffect(() => {
       const raw = await res.json();
       const data = typeof raw === "string" ? JSON.parse(raw) : raw;
 
-      // Backend returns JSON string of array
       const speciesArray = Object.values(data) as string[];
 
-
-      // Convert array to objects for your SpeciesPopup
-      
-      const speciesObjects = speciesArray.map((s: string, i: number) => ({
+      //convert array into structured objects
+      const baseSpecies = speciesArray.map((s, i) => ({
         id: i + 1,
         name: s,
-        description: "", // you can populate descriptions if you have them
-        image: "", // or placeholder images
+        description: "",
+        image: "",
       }));
 
-      const uniqueSpeciesObjects = speciesObjects.filter(
-        (s, index, self) =>
-          index === self.findIndex((t) => t.name === s.name)
+      //remove dupes
+      const uniqueSpecies = baseSpecies.filter(
+        (s, idx, self) => idx === self.findIndex(t => t.name === s.name)
       );
 
-      setSpecies(uniqueSpeciesObjects);
+      //wiki lookup for each species
+      const enrichedSpecies = await Promise.all(
+        uniqueSpecies.map(async (sp) => {
+          try {
+            const wikiRes = await fetch(
+              `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(
+                sp.name
+              )}`
+            );
+
+            if (!wikiRes.ok) return sp; //fallback
+
+            const wikiData = await wikiRes.json();
+
+            return {
+              ...sp,
+              description: wikiData.extract || "",
+              image:
+                wikiData.originalimage?.source ||
+                wikiData.thumbnail?.source ||
+                "",
+            };
+          } catch (err) {
+            console.warn("Wikipedia lookup failed:", sp.name, err);
+            return sp;
+          }
+        })
+      );
+
+      setSpecies(enrichedSpecies);
     } catch (err) {
       console.error("Failed to fetch species:", err);
       setSpecies([]);
@@ -103,6 +128,7 @@ useEffect(() => {
 
   fetchSpecies();
 }, [trail]);
+
 
   if (!trail) return <p className="p-8 text-red-600">Trail not found</p>;
 
@@ -119,8 +145,10 @@ useEffect(() => {
       <p className="text-gray-500 mb-6">{trail.trailtype}</p>
 
       <h2 className="text-2xl font-semibold mb-4">Map</h2>
-      
-      <Map geometry={trail.geometry} />
+
+      <div className="mb-10">
+        <Map geometry={trail.geometry}/>
+      </div>
 
       <h2 className="text-2xl font-semibold mb-4">Species Found Here</h2>
       {!species ? (
@@ -136,14 +164,12 @@ useEffect(() => {
               <Image
                 src={s.image}
                 alt={s.name}
-                width={200}
+                width={100}
                 height={120}
                 className="rounded-md object-cover"
               />
-              <div>
-                <h3 className="font-bold text-white">{s.name}</h3>
-                <p className="text-gray-500 text-sm">{s.description}</p>
-              </div>
+
+              <h3 className="font-bold text-white">{s.name}</h3>
             </div>
           ))}
         </div>
