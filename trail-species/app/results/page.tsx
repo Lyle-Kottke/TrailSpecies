@@ -5,22 +5,6 @@ import { useState, useEffect } from "react";
 import { TRAILS } from "@/lib/trails";
 import Link from "next/link";
 
-// export default function ResultsPage() {
-//   const searchParams = useSearchParams();
-//   const router = useRouter();
-
-//   const [query, setQuery] = useState("");
-//   const [filteredTrails, setFilteredTrails] = useState<typeof TRAILS>([]);
-
-//   useEffect(() => {
-//     const q = searchParams.get("query") || "";
-//     setQuery(q);
-//     setFilteredTrails(
-//       TRAILS.filter((trail) =>
-//         trail.name.toLowerCase().includes(q.toLowerCase())
-//       )
-//     );
-//   }, [searchParams]);
 export default function ResultsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
