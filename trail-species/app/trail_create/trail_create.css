@@ -1,0 +1,90 @@
+/* Resize the map control buttons */
+:root{
+  --icon-button-size: 50px;
+  --icon-size: 85%;
+  --green: #058d10;
+  --light-green: #89f76d;
+}
+
+/*Map div*/
+.trail_create {
+  position: relative; 
+}
+
+/*MAP CONTROL APPEARENCES*/
+/*Map Button Size*/
+.mapbox-gl-draw_ctrl-draw-btn,
+.mapbox-gl-draw-trash {
+  width: var(--icon-button-size) !important;      
+  height: var(--icon-button-size)!important;
+  padding: 10px !important;
+  font-size: 20px !important;  
+}
+
+/* Icons size inside buttons */
+.mapbox-gl-draw_line,
+.mapbox-gl-draw_trash {
+  background-size: var(--icon-size) !important;   
+}
+
+/*Default color of buttons*/
+.mapbox-gl-draw_ctrl-draw-btn,
+.mapbox-gl-draw_ctrl-trash {
+  background-color: var(--green) !important;
+  border: 1px solid #000000be !important;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/*Highlight color when hovering*/
+.mapbox-gl-draw_ctrl-draw-btn:hover,
+.mapbox-gl-draw_ctrl-trash:hover {
+  background-color: var(--light-green) !important;
+  box-shadow: 0 0 8px var(--light-green) !important;
+  transform: scale(1.1)
+}
+
+/* Temporary shrink when clicked */
+.mapbox-gl-draw_ctrl-draw-btn:active,
+.mapbox-gl-draw_ctrl-trash:active {
+  transform: scale(0.95) !important;
+}
+
+/*Highlight color when tool selected and increase size of button*/
+.mapbox-gl-draw_line.active {
+  background-color: var(--light-green) !important;
+  transform: scale(1.1);
+}
+
+/*SAVE TRAIL BUTTON APPEARENCE*/
+/*Default button appearence*/
+.save-btn {
+  /*Relative to the map*/
+  position: absolute;
+  bottom: 25px;
+  right: 16px;
+
+  background-color: var(--green);
+  color: rgb(0, 0, 0);
+
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+
+  border: 1px solid rgba(0, 0, 0, 0.7);
+
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/*Button Hover Behavior*/
+.save-btn:hover {
+  background-color: var(--light-green);
+  transform: scale(1.05);
+  box-shadow: 0 0 8px var(--light-green);
+}
+
+/*Button Active Behavior*/
+.save-btn:active {
+  transform: scale(0.95);
+}

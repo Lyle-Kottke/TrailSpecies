@@ -150,6 +150,13 @@ export default function HomePage() {
           <h1>Log in if you want to save trails.</h1>
         )}
       </div>
+       {/* Custom Trail Button */}
+      <button
+        onClick={() => router.push("/trail_create")}
+        className="mt-10 bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition">
+        Create Custom Trail
+      </button>
+
     </div>
   );
 }
