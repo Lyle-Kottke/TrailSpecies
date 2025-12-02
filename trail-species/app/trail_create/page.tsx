@@ -3,10 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
+
 import * as turf from '@turf/turf';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import "./trail_create.css";
+
+import { addTrailToDatabase } from '@/components/addTrailToDatabase.ts'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
@@ -17,6 +20,10 @@ export default function DrawPage() {
 
   //lines that the user draws will be saved to the variable geometry
   const [geometry, setGeometry] = useState(null);
+
+  async function saveTrail(){
+    const data = await addTrailToDatabase(geometry, "Default Name")
+  }
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -127,6 +134,7 @@ export default function DrawPage() {
 
   }, []);
 
+
   return (
   <div className="min-h-screen p-6 bg-black text-white">
     <h1 className="text-3xl font-bold mb-4">Draw on the Map</h1>
@@ -142,7 +150,7 @@ export default function DrawPage() {
       {/* Save Button */}
       <button
         className="save-btn"
-        onClick={() => console.log("Saving:", geometry)}>
+        onClick={saveTrail}>
         Save Custom Trail
       </button>
     </div>
