@@ -47,9 +47,13 @@ export default function HomePage() {
   const handleTaxonSelect = (taxon: any) => {
     setIncludeSpecies(prev => [...prev, taxon]);   // store full taxon or only needed fields
   };
-  //Function to remove taxons from the list when the user hits the 'x' button on them.
-  const removeTaxon = (id: number) => {
+  //Function to remove taxons from the include list when the user hits the 'x' button on them.
+  const removeIncludedTaxon = (id: number) => {
     setIncludeSpecies(prev => prev.filter(t => t.id !== id));
+  };
+  //Function to remove taxons from the exclude list when the user hits the 'x' button on them.
+  const removeExcludedTaxon = (id: number) => {
+    setExcludeSpecies(prev => prev.filter(t => t.id !== id));
   };
   //Captialize helper
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -71,8 +75,7 @@ export default function HomePage() {
   return (
     <div
       className="flex flex-col items-center justify-center min-h-screen p-8"
-      style={{ backgroundColor: "#0a0a0a" }}
-    >
+      style={{ backgroundColor: "#0a0a0a" }}>
       <h1 className="text-5xl font-bold mb-4">Trail Species</h1>
 
       <p className="text-gray-500 mb-10 text-center max-w-lg">
@@ -99,84 +102,79 @@ export default function HomePage() {
         </button>
       </form>
 
+      {/*Search by species filters*/}
+      <h2 className="text-xl font-semibold mb-2">Filters</h2>  
+      {/*Species search bar*/}
       <SpeciesSearch
-        onInclude={(taxon) => setIncludeSpecies(prev => [...prev, taxon])}
-        onExclude={(taxon) => setExcludeSpecies(prev => [...prev, taxon])}
+        onInclude={(taxon) => {
+          if (includeSpecies.some(s => s.id === taxon.id)) return; //Logic here to make sure user doesn't add multiple copies of a taxon
+          setIncludeSpecies(prev => [...prev, taxon])
+          setExcludeSpecies(prev => prev.filter(s=>s.id !== taxon.id)); //If a species that already exists in the opposite box is added to this box, remove it from opposite box
+        }}
+        onExclude={(taxon) => {
+          if (excludeSpecies.some(s => s.id === taxon.id)) return;
+          setExcludeSpecies(prev => [...prev, taxon])
+          setIncludeSpecies(prev => prev.filter(s=>s.id !== taxon.id)); 
+        }}
+          
       />
-      {/*Adds tag element */}
-      <div className="flex flex-wrap gap-2 mt-2">
-        {includeSpecies.map(taxon => (
-          <div
-            key={taxon.id}
-            className="px-3 py-1 bg-zinc-900 border border-zinc-700 rounded-full flex items-center gap-2"
-          >
-            <span className= "text-gray-100">{capitalize(taxon.preferred_common_name)} / {capitalize(taxon.name)}</span>
-            <button
-              onClick={() => removeTaxon(taxon.id)}
-              className="text-gray-600 hover:text-black"
-            >
-              x
-            </button>
-          </div>
-        ))}
-      </div>
-
-
-      {/* FILTERS SECTION */}
-      <div className="w-full max-w-xl mt-8 text-gray-200">
-        <h2 className="text-xl font-semibold mb-2">Filters</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          {/* Include Section */}
-          <div className="bg-zinc-900 p-4 rounded-xl border border-zinc-700">
-            <h3 className="font-medium mb-2 text-green-400">Include Species</h3>
-            <div className="flex flex-wrap gap-2">
-              {SPECIES.map((sp) => (
+      {/*Tags system */}
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+  
+        {/* Included */}
+        <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-700">
+          <div className="text-green-300 font-semibold mb-2">Included Species</div>
+          {/*Size of box*/}
+          <div className="flex flex-wrap gap-2 min-w-[250px] max-w-md">
+            {includeSpecies.map((taxon) => (
+              <span
+                key={taxon.id}
+                className="px-2 py-1 bg-green-800 text-green-100 text-sm rounded-lg flex items-center gap-1"
+              >
+                {capitalize(taxon.preferred_common_name)} / {capitalize(taxon.name)}
                 <button
-                  key={sp}
-                  type="button"
-                  onClick={() => toggleInclude(sp)}
-                  className={`px-3 py-1 rounded-full border transition ${
-                    includeSpecies.includes(sp)
-                      ? "bg-green-700 border-green-500"
-                      : "bg-zinc-800 border-zinc-600 hover:bg-zinc-700"
-                  }`}
+                  onClick={() => removeIncludedTaxon(taxon.id)}
+                  className="text-green-200 hover:text-green-400"
                 >
-                  {sp}
+                  ✕
                 </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Exclude Section */}
-          <div className="bg-zinc-900 p-4 rounded-xl border border-zinc-700">
-            <h3 className="font-medium mb-2 text-red-400">Exclude Species</h3>
-            <div className="flex flex-wrap gap-2">
-              {SPECIES.map((sp) => (
-                <button
-                  key={sp}
-                  type="button"
-                  onClick={() => toggleExclude(sp)}
-                  className={`px-3 py-1 rounded-full border transition ${
-                    excludeSpecies.includes(sp)
-                      ? "bg-red-700 border-red-500"
-                      : "bg-zinc-800 border-zinc-600 hover:bg-zinc-700"
-                  }`}
-                >
-                  {sp}
-                </button>
-              ))}
-            </div>
+              </span>
+            ))}
           </div>
         </div>
 
+        {/* Excluded */}
+        <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-700">
+          <div className="text-red-300 font-semibold mb-2">Excluded Species</div>
+          {/*Size of box*/}
+          <div className="flex flex-wrap gap-2 min-w-[250px] max-w-md">
+            {excludeSpecies.map((taxon) => (
+              <span
+                key={taxon.id}
+                className="px-2 py-1 bg-red-800 text-red-100 text-sm rounded-lg flex items-center gap-1"
+              >
+                {capitalize(taxon.preferred_common_name)} / {capitalize(taxon.name)}
+                <button
+                  onClick={() => removeExcludedTaxon(taxon.id)}
+                  className="text-red-200 hover:text-red-400"
+                >
+                  ✕
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+  
+      {/* FILTERS Preview SECTION */}
+      <div className="w-full max-w-xl mt-8 text-gray-200">
         {/* Preview */}
         <div className="mt-4 text-sm text-gray-400">
           <p>Including: {includeSpecies.join(", ") || "none"}</p>
           <p>Excluding: {excludeSpecies.join(", ") || "none"}</p>
         </div>
       </div>
+    
 
       {/* Logged in display */}
       <div className="mt-8 text-gray-500">
@@ -186,13 +184,13 @@ export default function HomePage() {
           <h1>Log in if you want to save trails.</h1>
         )}
       </div>
-       {/* Custom Trail Button */}
+
+      {/* Custom Trail Button */}
       <button
         onClick={() => router.push("/trail_create")}
         className="mt-10 bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition">
         Create Custom Trail
       </button>
-
     </div>
   );
 }
