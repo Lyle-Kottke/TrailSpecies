@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import SpeciesSearch from "@/components/SpeciesSearch";
 import Link from "next/link";
 
 // Predefined species list
@@ -42,6 +43,18 @@ export default function HomePage() {
     // Ensure it can't be in include simultaneously
     setIncludeSpecies((prev) => prev.filter((s) => s !== species));
   };
+  //Function to store taxons selected by user. Each element is the JSON from iNaturalist about the selected taxon
+  const handleTaxonSelect = (taxon: any) => {
+    setIncludeSpecies(prev => [...prev, taxon]);   // store full taxon or only needed fields
+  };
+  //Function to remove taxons from the list when the user hits the 'x' button on them.
+  const removeTaxon = (id: number) => {
+    setIncludeSpecies(prev => prev.filter(t => t.id !== id));
+  };
+  //Captialize helper
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +98,29 @@ export default function HomePage() {
           Search
         </button>
       </form>
+
+      <SpeciesSearch
+        onInclude={(taxon) => setIncludeSpecies(prev => [...prev, taxon])}
+        onExclude={(taxon) => setExcludeSpecies(prev => [...prev, taxon])}
+      />
+      {/*Adds tag element */}
+      <div className="flex flex-wrap gap-2 mt-2">
+        {includeSpecies.map(taxon => (
+          <div
+            key={taxon.id}
+            className="px-3 py-1 bg-zinc-900 border border-zinc-700 rounded-full flex items-center gap-2"
+          >
+            <span className= "text-gray-100">{capitalize(taxon.preferred_common_name)} / {capitalize(taxon.name)}</span>
+            <button
+              onClick={() => removeTaxon(taxon.id)}
+              className="text-gray-600 hover:text-black"
+            >
+              x
+            </button>
+          </div>
+        ))}
+      </div>
+
 
       {/* FILTERS SECTION */}
       <div className="w-full max-w-xl mt-8 text-gray-200">
