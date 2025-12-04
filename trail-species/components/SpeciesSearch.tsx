@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef} from "react";
+import Image from "next/image";
 
 export default function SpeciesSearch({ onInclude, onExclude }: { onInclude: (taxon: any) => void; onExclude: (taxon: any) => void;}) {
    // ... Component code here
@@ -75,45 +76,59 @@ export default function SpeciesSearch({ onInclude, onExclude }: { onInclude: (ta
                     {/* Results */}
                     {!loading && results.length > 0 && (
                         results.map((taxon) => (
-                            <div key={taxon.id} className="px-4 py-2 hover:bg-zinc-800 border-b border-zinc-800">
-                            {/* Row 1: Taxon name */}
-                            <div className="text-gray-100 font-medium">
-                                {taxon.preferred_common_name || taxon.name}
-                            </div>
+                            <div key={taxon.id} className="px-4 py-2 hover:bg-zinc-800 border-b border-zinc-800 flex justify-between items-start">
+                                {/* LEFT SIDE: name, rank, buttons */}
+                                <div className="flex flex-col">                                
+                                    {/* Row 1: Taxon name */}
+                                    <div className="text-gray-100 font-medium">
+                                        {taxon.preferred_common_name || taxon.name}
+                                    </div>
 
-                            {/* Row 2: Scientific name + rank */}
-                            <div className="text-xs text-gray-500 mb-2">
-                                {taxon.rank} — {taxon.name}
-                            </div>
+                                    {/* Row 2: Scientific name + rank */}
+                                    <div className="text-xs text-gray-500 mb-2">
+                                        {taxon.rank} — {taxon.name}
+                                    </div>
 
-                            {/* Row 3: Include / Exclude buttons */}
-                            <div className="flex gap-2">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                onInclude(taxon);
-                                setText("");
-                                setShowDropdown(false);
-                                }}
-                                className="px-2 py-1 text-xs rounded bg-green-700 hover:bg-green-600"
-                            >
-                                Include
-                            </button>
+                                    {/* Row 3: Include / Exclude buttons */}
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                onInclude(taxon);
+                                                setText("");
+                                                setShowDropdown(false);
+                                            }}
+                                            className="px-2 py-1 text-xs rounded bg-green-700 hover:bg-green-600 flex items-center gap-3"
+                                            >
+                                            Include
+                                        </button>
 
-                            <button
-                                type="button"
-                                onClick={() => {
-                                onExclude(taxon);
-                                setText("");
-                                setShowDropdown(false);
-                                }}
-                                className="px-2 py-1 text-xs rounded bg-red-700 hover:bg-red-600"
-                            >
-                                Exclude
-                            </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                            onExclude(taxon);
+                                            setText("");
+                                            setShowDropdown(false);
+                                            }}
+                                            className="px-2 py-1 text-xs rounded bg-red-700 hover:bg-red-600"
+                                            >
+                                            Exclude
+                                        </button>
+                                    </div>
+                                </div>
+                                {/*Right Side: taxon image */}
+                                {taxon.default_photo?.url && (
+                                    <Image
+                                        src={taxon.default_photo.url}
+                                        alt={taxon.name}
+                                        width={80}
+                                        height={80}
+                                        className="rounded ml-4 object-cover"
+                                        style={{ objectFit: "cover" }}
+                                    />
+                                )}
                             </div>
-                        </div>
-                        ))
+                        ))  
                     )}
                 </div>
                 )}

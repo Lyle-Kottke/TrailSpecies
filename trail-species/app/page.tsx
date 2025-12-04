@@ -165,16 +165,6 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-  
-      {/* FILTERS Preview SECTION */}
-      <div className="w-full max-w-xl mt-8 text-gray-200">
-        {/* Preview */}
-        <div className="mt-4 text-sm text-gray-400">
-          <p>Including: {includeSpecies.join(", ") || "none"}</p>
-          <p>Excluding: {excludeSpecies.join(", ") || "none"}</p>
-        </div>
-      </div>
-    
 
       {/* Logged in display */}
       <div className="mt-8 text-gray-500">
