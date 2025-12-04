@@ -9,7 +9,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import "./trail_create.css";
 
-import { addTrailToDatabase } from '@/components/addTrailToDatabase.ts'
+import { addTrailToDatabase } from '@/components/addTrailToDatabase'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
@@ -19,10 +19,24 @@ export default function DrawPage() {
   const drawRef = useRef<MapboxDraw | null>(null);
 
   //lines that the user draws will be saved to the variable geometry
-  const [geometry, setGeometry] = useState(null);
+  const [geometry, setGeometry] = useState(null); // Feature JSON
+  const [trailName, setTrailName] = useState("Unnamed Trail"); // Default trail name
+
+  const [error, setError] = useState<string | null>(null); //errror that will be displayed above the map
 
   async function saveTrail(){
-    const data = await addTrailToDatabase(geometry, "Default Name")
+    const data = await addTrailToDatabase(geometry, trailName) // returns success with status 200 or error with status code
+    if (data.error) {
+      setError(data.error);
+    } else {
+      alert("Trail saved successfully!");
+      setError(null);
+      setTrailName("Unnamed Trail");
+    }
+  }
+
+  function handleTrailNameChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setTrailName(event.target.value);
   }
 
   useEffect(() => {
@@ -139,6 +153,17 @@ export default function DrawPage() {
   <div className="min-h-screen p-6 bg-black text-white">
     <h1 className="text-3xl font-bold mb-4">Draw on the Map</h1>
 
+    <div className="mb-4">
+      {error && <p className="text-red-500 mt-4">Error: {error}</p>}
+      <label htmlFor="trailName" className="block mb-2">Trail Name:</label>
+      <input
+        type="text"
+        id="trailName"
+        value={trailName}
+        onChange={handleTrailNameChange}
+        className="p-2 rounded border border-gray-600 bg-gray-800 text-white w-full"
+      />
+    </div>
 
     <div className="trail_create">
       {/* Map */}
@@ -153,9 +178,7 @@ export default function DrawPage() {
         onClick={saveTrail}>
         Save Custom Trail
       </button>
-    </div>
-
-    
+    </div>    
 
   </div>
 );
