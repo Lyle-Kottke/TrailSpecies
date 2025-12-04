@@ -9,7 +9,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import "./trail_create.css";
 
-import { addTrailToDatabase } from '@/components/addTrailToDatabase'
+import { addTrailToDatabase } from '@/utils/supabase/addTrailToDatabase'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 

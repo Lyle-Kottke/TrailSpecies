@@ -2,8 +2,8 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { TRAILS } from "@/lib/trails";
 import Link from "next/link";
+import PublicTrailList from "@/components/publicTrailList";
 
 export default function ResultsPage() {
   const searchParams = useSearchParams();
@@ -78,22 +78,7 @@ export default function ResultsPage() {
       {!loading && !error && filteredTrails.length === 0 ? (
         <p className="text-gray-600 mt-4">No trails found.</p>
       ) : (
-        <div className="mt-8 grid gap-6 w-full max-w-3xl">
-          {filteredTrails.map((trail) => (
-            <Link
-            key={trail.name}
-            href={`/trail/${trail.name}?query=${encodeURIComponent(query)}`}
-            className="block border rounded-2xl shadow-sm hover:shadow-lg transition p-4 text-green-600"
-            >
-            <div className="flex flex-col md:flex-row gap-4 items-center">
-                <div>
-                <h2 className="text-xl font-semibold text-white">{trail.name}</h2>
-                <p className="text-gray-500">{trail.description}</p>
-                </div>
-            </div>
-            </Link>
-          ))}
-        </div>
+        <PublicTrailList trails={filteredTrails} query={query} />
       )}
     </div>
   );
