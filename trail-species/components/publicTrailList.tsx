@@ -12,14 +12,18 @@ export interface PublicTrail {
 interface PublicTrailListProps {
   trails: PublicTrail[];
   baseHref?: string; // default: "/trail"
-  query?: string;    // so you can preserve ?query=...
+  searchParams?: URLSearchParams;    // so you can preserve ?query=...
 }
 
 export default function PublicTrailList({
   trails,
   baseHref = "/trail",
-  query = "",
+  searchParams,
 }: PublicTrailListProps) {
+
+  const paramsString = searchParams ? `?${searchParams.toString()}` : "";
+
+
   if (!trails?.length) {
     return <p className="text-gray-600 mt-4">No trails found.</p>;
   }
@@ -29,9 +33,7 @@ export default function PublicTrailList({
       {trails.map((trail) => (
         <Link
           key={trail.name}
-          href={`${baseHref}/${encodeURIComponent(trail.name)}${
-            query ? `?query=${encodeURIComponent(query)}` : ""
-          }`}
+          href={`${baseHref}/${encodeURIComponent(trail.name)}${paramsString}`}
           className="block border rounded-2xl shadow-sm hover:shadow-lg transition p-4 text-green-600"
         >
           <div className="flex flex-col md:flex-row gap-4 items-center">

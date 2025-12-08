@@ -8,26 +8,67 @@ import PublicTrailList from "@/components/publicTrailList";
 export default function ResultsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-
+  
   const [query, setQuery] = useState("");
+  const [includeNames, setIncludeNames] = useState<string[]>([]);
+  const [excludeNames, setExcludeNames] = useState<string[]>([]);
+  // const [includeIds, setIncludeIds] = useState<string[]>([]);
+  // const [excludeIds, setExcludeIds] = useState<string[]>([]);
+
   const [filteredTrails, setFilteredTrails] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // new example request: /extended_trail_search?current_month=5&include_ids=123,456&exclude_ids=789&trail_name=Blue%20Trail
+  // where query items are: 
+  // const params = new URLSearchParams({
+  //   query,
+  //   include: includeSpecies.join(","),
+  //   exclude: excludeSpecies.join(","),
+  // });
 
   useEffect(() => {
     const q = searchParams.get("query") || "";
-    setQuery(q);
+    const currentMonth = new Date().getMonth() + 1;
 
-    if (!q) {
-      setFilteredTrails([]);
-      return;
-    }
+    const i_params = searchParams.get("include_ids");
+    const e_params = searchParams.get("exclude_ids");
+
+    const i_ids = i_params ? i_params.split(",") : [];
+    const e_ids = e_params ? e_params.split(",") : [];
+
+    const i_names = (searchParams.get("include_names") || "")
+      .split(",")
+      .map(decodeURIComponent);
+    const e_names = (searchParams.get("exclude_names") || "")
+      .split(",")
+      .map(decodeURIComponent);
+
+    const extendedSearchParams = new URLSearchParams({
+      q: q,
+      current_month: currentMonth.toString(),
+      include_ids: i_ids.join(","),
+      exclude_ids: e_ids.join(","),
+    });
+
+    setQuery(q);
+    setIncludeNames(i_names);
+    setExcludeNames(e_names);
+    setIncludeIds(i_ids);
+    setExcludeIds(e_ids);
+
+    // if (!q) {
+    //   setFilteredTrails([]);
+    //   return;
+    // }
 
     setLoading(true);
     setError(null);
 
-    fetch(`https://trailgeoapi.onrender.com/trails_search?q=${encodeURIComponent(q)}`)
-      .then(async (res) => {
+    console.log(`URL: https://trailgeoapi.onrender.com/extended_trail_search?${extendedSearchParams.toString()}`)
+    
+    fetch(`https://trailgeoapi.onrender.com/extended_trail_search?${extendedSearchParams.toString()}`)
+        .then(async (res) => {
         if (!res.ok) {
           const msg = await res.text();
           throw new Error(msg || "Failed to fetch trails");
@@ -70,7 +111,38 @@ export default function ResultsPage() {
       <h1 className="text-3xl font-bold">
         Search results for "{query || "All Trails"}"
       </h1>
-
+      {includeNames.length > 0 && (
+        <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-700">
+          <div className="text-green-300 font-semibold mb-2">Included Species</div>
+          {/*Size of box*/}
+          <div className="flex flex-wrap gap-2 min-w-[250px] max-w-md">
+            {includeNames.map((name) => (
+              <span
+                key={name}
+                className="px-2 py-1 bg-green-800 text-green-100 text-sm rounded-lg flex items-center gap-1"
+              >
+                {name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}  
+      {excludeNames.length > 0 && (
+        <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-700">
+          <div className="text-red-300 font-semibold mb-2">Excluded Species</div>
+          {/*Size of box*/}
+          <div className="flex flex-wrap gap-2 min-w-[250px] max-w-md">
+            {excludeNames.map((name) => (
+              <span
+                key={name}
+                className="px-2 py-1 bg-red-800 text-red-100 text-sm rounded-lg flex items-center gap-1"
+              >
+                {name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}  
       {loading && <p>Loading trails...</p>}
       {error && <p className="text-red-600">{error}</p>}
 
@@ -78,7 +150,10 @@ export default function ResultsPage() {
       {!loading && !error && filteredTrails.length === 0 ? (
         <p className="text-gray-600 mt-4">No trails found.</p>
       ) : (
-        <PublicTrailList trails={filteredTrails} query={query} />
+        <PublicTrailList
+          trails={filteredTrails}
+          searchParams={searchParams} // this is the full URLSearchParams object
+        />
       )}
     </div>
   );

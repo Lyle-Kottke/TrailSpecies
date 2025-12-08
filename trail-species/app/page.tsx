@@ -11,8 +11,8 @@ const SPECIES = ["bear", "wolf", "deer", "moose", "bird"];
 
 export default function HomePage() {
   const [query, setQuery] = useState("");
-  const [includeSpecies, setIncludeSpecies] = useState<string[]>([]);
-  const [excludeSpecies, setExcludeSpecies] = useState<string[]>([]);
+  const [includeSpecies, setIncludeSpecies] = useState<any[]>([]);
+  const [excludeSpecies, setExcludeSpecies] = useState<any[]>([]);
 
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -65,8 +65,14 @@ export default function HomePage() {
 
     const params = new URLSearchParams({
       query,
-      include: includeSpecies.join(","),
-      exclude: excludeSpecies.join(","),
+      include_ids: includeSpecies.map(s => s.id).join(","),
+      exclude_ids: excludeSpecies.map(s => s.id).join(","),
+      include_names: includeSpecies
+        .map((s) => encodeURIComponent(s.preferred_common_name || s.name)) // replaces commas with safe url-encoded values
+        .join(","), 
+      exclude_names: excludeSpecies
+        .map((s) => encodeURIComponent(s.preferred_common_name || s.name))
+        .join(","),
     });
 
     router.push(`/results?${params.toString()}`);

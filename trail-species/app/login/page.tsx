@@ -1,49 +1,89 @@
+'use client'
+
+import { useActionState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { login, signup } from './actions'
 
 export default function LoginPage() {
+  const router = useRouter()
+
+  const [loginState, loginAction] = useActionState(login, { error: null, success: false })
+  const [signupState, signupAction] = useActionState(signup, { error: null, success: false })
+
+  useEffect(() => {
+    if (loginState.success) {
+      router.push('/')        // ⬅️ redirect here
+    }
+  }, [loginState.success, router])
+
+  useEffect(() => {
+    if (signupState.success) {
+      alert('Signup successful! Please check your email to confirm your account.')
+    }
+  }, [signupState.success, router])
+
+  function clearLoginError() {
+    loginState.error = null
+  }
+
+  function clearSignupError() {
+    signupState.error = null
+  }
+
   return (
     <div style={styles.container}>
       <div style={styles.card}>
         <h1 style={styles.title}>TrailSpecies</h1>
         <p style={styles.subtitle}>Log in to find trails and explore wildlife!</p>
+
         <form style={styles.form}>
           <div style={styles.inputGroup}>
             <label htmlFor="email" style={styles.label}>Email</label>
-            <input 
-              id="email" 
-              name="email" 
-              type="email" 
-              required 
-              style={styles.input}
-              placeholder="name@example.com"
-            />
-          </div>
-          
-          <div style={styles.inputGroup}>
-            <label htmlFor="password" style={styles.label}>Password</label>
-            <input 
-              id="password" 
-              name="password" 
-              type="password" 
-              required 
-              style={styles.input}
-              placeholder="••••••••"
-            />
+            <input id="email" name="email" type="email" required style={styles.input} />
           </div>
 
+          <div style={styles.inputGroup}>
+            <label htmlFor="password" style={styles.label}>Password</label>
+            <input id="password" name="password" type="password" required style={styles.input} />
+          </div>
+
+          {/* LOGIN ERROR */}
+          {loginState.error && (
+            <p style={{ color: 'red', fontSize: '14px', marginTop: '-12px' }}>
+              {loginState.error}
+            </p>
+          )}
+
           <div style={styles.buttonGroup}>
-            <button formAction={login} style={styles.primaryButton}>
+            <button
+              formAction={loginAction}
+              onClick={clearSignupError}     // 🔥 clears signup errors when logging in
+              style={styles.primaryButton}
+            >
               Log in
             </button>
-            <button formAction={signup} style={styles.secondaryButton}>
+
+            <button
+              formAction={signupAction}
+              onClick={clearLoginError}      // 🔥 clears login errors when signing up
+              style={styles.secondaryButton}
+            >
               Sign up
             </button>
+
+            {/* SIGNUP ERROR */}
+            {signupState.error && (
+              <p style={{ color: 'red', fontSize: '14px' }}>
+                {signupState.error}
+              </p>
+            )}
           </div>
         </form>
       </div>
     </div>
   )
 }
+
 
 const styles = {
   container: {

@@ -7,6 +7,7 @@ export async function getUserCustomTrails(userId: string) {
   const { data, error } = await (await supabase)
     .from("custom_trails")
     .select("*")
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) {

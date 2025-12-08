@@ -12,7 +12,6 @@ export default function TrailPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const id = decodeURIComponent(params.id as string); // trail name in URL
-  const query = searchParams.get("query") || "";
 
   const [trail, setTrail] = useState<any | null>(null);
   const [species, setSpecies] = useState<any[] | null>(null);
@@ -20,7 +19,9 @@ export default function TrailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-
+  // convert to string for back link
+  const paramsString = searchParams ? `?${searchParams.toString()}` : "";
+  
   useEffect(() => {
     async function fetchTrail() {
       if (!id) return;
@@ -147,7 +148,7 @@ useEffect(() => {
   return (
     <div className="p-8">
       <a
-        href={`/results?query=${encodeURIComponent(query)}`}
+        href={`/results${paramsString}`}
         className="text-green-600 hover:underline"
       >
         ← Back to results
