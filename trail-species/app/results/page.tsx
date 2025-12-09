@@ -54,8 +54,8 @@ export default function ResultsPage() {
     setQuery(q);
     setIncludeNames(i_names);
     setExcludeNames(e_names);
-    setIncludeIds(i_ids);
-    setExcludeIds(e_ids);
+    // setIncludeIds(i_ids);
+    // setExcludeIds(e_ids);
 
     // if (!q) {
     //   setFilteredTrails([]);
