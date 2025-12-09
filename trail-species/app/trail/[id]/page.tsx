@@ -6,12 +6,17 @@ import Image from "next/image";
 import SpeciesPopup from "@/components/SpeciesPopup";
 
 import dynamic from "next/dynamic";
+import {getCustomTrailById} from "@/utils/supabase/getUserCustomTrails_client";
+import { url } from "inspector/promises";
+import Link from "next/link";
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 export default function TrailPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const id = decodeURIComponent(params.id as string); // trail name in URL
+  const is_custom_trail = searchParams.get("is_custom_trail") === "true";
+  const previous_page = searchParams.get("previous_page") || "/results";
 
   const [trail, setTrail] = useState<any | null>(null);
   const [species, setSpecies] = useState<any[] | null>(null);
@@ -30,26 +35,46 @@ export default function TrailPage() {
       setError(null);
 
       try {
-        const res = await fetch(
-          `https://trailgeoapi.onrender.com/trails_by_name?name=${encodeURIComponent(id)}`
-        );
+        if (!is_custom_trail) {
+          const res = await fetch(
+                    `https://trailgeoapi.onrender.com/trails_by_name?name=${encodeURIComponent(id)}`
+                  );
+          const raw = await res.json();
+          
+          console.log("raw", raw)
 
-        const raw = await res.json();
+          // Backend returns JSON string → parse it
+          const geojson = typeof raw === "string" ? JSON.parse(raw) : raw;
 
-        // Backend returns JSON string → parse it
-        const geojson = typeof raw === "string" ? JSON.parse(raw) : raw;
-        const feature = geojson.features?.[0];
+          console.log("geojson", JSON.stringify(geojson))
 
-        if (!feature) throw new Error("Trail not found");
+          const feature = geojson.features?.[0];
 
-        const props = feature.properties;
-        //console.log(props)
-        setTrail({
-          name: props.name,
-          trailtype: props.trailtype,
-          lengthmiles: props.lengthmiles,
-          geometry: geojson,
-        });
+          if (!feature) throw new Error("Trail not found");
+
+          const props = feature.properties;
+          //console.log(props)
+          setTrail({
+            name: props.name,
+            trailtype: props.trailtype,
+            lengthmiles: props.lengthmiles,
+            geometry: geojson,
+          });
+        } else { // is custom trail
+          const res = await getCustomTrailById(id);
+        
+          console.log("res", JSON.stringify(res))
+
+          if (!res) throw new Error("Trail not found");
+
+          setTrail({
+            name: res.name,
+            trailtype: res?.trailtype,
+            lengthmiles: res?.lengthmiles,
+            geometry: res.featureCollection,
+          });
+        }
+      
       } catch (err: any) {
         console.error(err);
         setError(err.message);
@@ -68,13 +93,21 @@ useEffect(() => {
   const fetchSpecies = async () => {
     try {
       const currentMonth = new Date().getMonth() + 1;
-      console.log(currentMonth, "Current Month!", encodeURIComponent(trail.name), "Trail name!")
-
-      const res = await fetch(
-        `https://trailgeoapi.onrender.com/species_by_trail?trail_name=${encodeURIComponent(
-          trail.name
-        )}&current_month=${currentMonth}`
-      );
+      let res;
+      if (!is_custom_trail){
+        res = await fetch(
+          `https://trailgeoapi.onrender.com/species_by_trail?trail_name=${encodeURIComponent(
+            trail.name
+          )}&current_month=${currentMonth}`
+        );
+      } else {
+        res = await fetch(
+          `https://trailgeoapi.onrender.com/species_by_trail_by_id?trail_id=${encodeURIComponent(
+            id
+          )}&current_month=${currentMonth}`
+        );
+      }
+      console.log(res)
       const raw = await res.json();
       const data = typeof raw === "string" ? JSON.parse(raw) : raw;
       //No results
@@ -147,15 +180,15 @@ useEffect(() => {
 
   return (
     <div className="p-8">
-      <a
-        href={`/results${paramsString}`}
+      <Link
+        href={ is_custom_trail ? `${previous_page}` : `${previous_page}${paramsString}`}
         className="text-green-600 hover:underline"
       >
         ← Back to results
-      </a>
+      </Link>
 
       <h1 className="text-3xl font-bold mt-4">{trail.name}</h1>
-      <p className="text-gray-500 mb-6">{trail.trailtype}</p>
+      <p className="text-gray-500 mb-6">{trail?.trailtype}</p>
 
       <h2 className="text-2xl font-semibold mb-4">Map</h2>
 

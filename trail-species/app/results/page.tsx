@@ -12,6 +12,10 @@ export default function ResultsPage() {
   const [query, setQuery] = useState("");
   const [includeNames, setIncludeNames] = useState<string[]>([]);
   const [excludeNames, setExcludeNames] = useState<string[]>([]);
+
+  console.log("excludeNames", excludeNames)
+  console.log("includeNames", includeNames)
+
   // const [includeIds, setIncludeIds] = useState<string[]>([]);
   // const [excludeIds, setExcludeIds] = useState<string[]>([]);
 
@@ -52,8 +56,12 @@ export default function ResultsPage() {
     });
 
     setQuery(q);
-    setIncludeNames(i_names);
-    setExcludeNames(e_names);
+    if (i_names.length > 0 && i_names[0] != "") {
+      setIncludeNames(i_names);
+    }
+    if (e_names.length > 0 && e_names[0] != "") {
+      setExcludeNames(e_names);
+    }
     // setIncludeIds(i_ids);
     // setExcludeIds(e_ids);
 
@@ -153,6 +161,8 @@ export default function ResultsPage() {
         <PublicTrailList
           trails={filteredTrails}
           searchParams={searchParams} // this is the full URLSearchParams object
+          baseHref="/trail"
+          previous_page="/results"
         />
       )}
     </div>

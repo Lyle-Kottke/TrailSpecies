@@ -7,16 +7,16 @@ const LARGEST_DISTANCE_ALOTTED_IN_MILES = 200
 const MAX_NUMBER_NODES = 100
 
 
-export async function addTrailToDatabase(features: any, trail_name: String) {
+export async function addTrailToDatabase(featureCollection: any, name: String) {
     const supabase = await createClient()
     const user = await getUser()
 
     if (!user) {
       return { error: "Not authenticated", status: 401 }
     }
-    console.log("validating features")
+    console.log("validating featureCollection")
     
-    const validationResponse = validate_trail(features)
+    const validationResponse = validate_trail(featureCollection)
     console.log(validationResponse)
 
     if (validationResponse.status !== 200) {
@@ -25,9 +25,9 @@ export async function addTrailToDatabase(features: any, trail_name: String) {
     }
 
     const new_custom_trail = {
-      features: features,
+      featureCollection: featureCollection, 
       user_id: user.id,
-      trail_name: trail_name
+      name: name
     }
     
     const {data, error} = await supabase
@@ -99,13 +99,13 @@ function get_number_nodes(feature_list: any){
     return node_count
 }
 
-function validate_trail(features: any){
+function validate_trail(featureCollection: any){
   try {
-    if (features == null) { // no features
+    if (featureCollection == null) { // no featureCollection
       return { error: "No points selected", status: 401 } 
     }
 
-    const feature_list = features["features"]
+    const feature_list = featureCollection["features"]
 
     if (feature_list.length == 0) { // no features
       return { error: "No points selected", status: 401 } 

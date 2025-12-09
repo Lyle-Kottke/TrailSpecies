@@ -19,6 +19,7 @@ export default function DrawPage() {
   const drawRef = useRef<MapboxDraw | null>(null);
 
   //lines that the user draws will be saved to the variable geometry
+
   const [geometry, setGeometry] = useState(null); // Feature JSON
   const [trailName, setTrailName] = useState("Unnamed Trail"); // Default trail name
 

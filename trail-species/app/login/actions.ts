@@ -5,6 +5,8 @@ import { createClient } from '@/utils/supabase/server'
 
 export async function login(prevState: any, formData: FormData) {
   const supabase = await createClient()
+  //logout before login to clear any existing session
+  await supabase.auth.signOut()
 
   const { email, password } = Object.fromEntries(formData)
 
