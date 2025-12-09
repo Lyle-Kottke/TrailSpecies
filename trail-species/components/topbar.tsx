@@ -15,7 +15,6 @@ export default function TopBar() {
       </div>
 
       <nav className="flex gap-6 items-center">
-        {/* spread out links on navbar */}
         <Link 
           href="/community_trails"
           className="text-gray-400 hover:text-gray-200"
@@ -27,6 +26,12 @@ export default function TopBar() {
           className="text-gray-400 hover:text-gray-200"
         >
           My Created Trails
+        </Link>
+        <Link 
+          href="/saved_searches"
+          className="text-gray-400 hover:text-gray-200"
+        >
+          My Saved Searches
         </Link>
         {pathname !== '/login' && (
           <Link

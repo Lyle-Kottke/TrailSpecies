@@ -10,13 +10,13 @@ export async function login(prevState: any, formData: FormData) {
 
   const { email, password } = Object.fromEntries(formData)
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { error } = await supabase.auth.signInWithPassword({ email: email as string, password: password as string })
 
   if (error) {
     return { error: 'Incorrect email or password', success: false }
   }
 
-  return { error: null, success: true }  // ⬅️ needed
+  return { error: null, success: true } 
 }
 
 

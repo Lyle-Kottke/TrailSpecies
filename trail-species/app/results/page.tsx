@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import PublicTrailList from "@/components/publicTrailList";
+import {saveUserSearch} from "@/utils/supabase/userSavedInfo";
 
 export default function ResultsPage() {
   const searchParams = useSearchParams();
@@ -30,6 +31,11 @@ export default function ResultsPage() {
   //   include: includeSpecies.join(","),
   //   exclude: excludeSpecies.join(","),
   // });
+
+  async function handleUserSearchSave() {
+    const res = await saveUserSearch(searchParams.toString())
+    alert("Search saved!")
+  }
 
   useEffect(() => {
     const q = searchParams.get("query") || "";
@@ -115,10 +121,17 @@ export default function ResultsPage() {
         ← Back to search
       </button>
 
-      
-      <h1 className="text-3xl font-bold">
-        Search results for "{query || "All Trails"}"
-      </h1>
+      <div className="flex flex-col md:flex-row md:items-center justify-center w-full gap-4">
+        <h1 className="text-3xl font-bold">
+          Search results for "{query || "All Trails"}"
+        </h1>
+        <button
+          onClick={handleUserSearchSave}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Save this Search
+        </button>
+      </div>
       {includeNames.length > 0 && (
         <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-700">
           <div className="text-green-300 font-semibold mb-2">Included Species</div>

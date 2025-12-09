@@ -23,7 +23,7 @@ export default function PublicTrailList({
   searchParams,
 }: PublicTrailListProps) {
 
-  const paramsString = searchParams ? `?${searchParams.toString()}` : "";
+  const paramsString = searchParams ? `${searchParams.toString()}` : "";
 
 
   if (!trails?.length) {
@@ -35,7 +35,7 @@ export default function PublicTrailList({
       {trails.map((trail) => (
         <Link
           key={trail.name}
-          href={`${baseHref}/${encodeURIComponent(trail.name)}${paramsString}&is_custom_trail=${false}&is_custom_trail=${false}&previous_page=${encodeURIComponent(previous_page)}`}
+          href={`${baseHref}/${encodeURIComponent(trail.name)}?${paramsString}&is_custom_trail=${false}&is_custom_trail=${false}&previous_page=${encodeURIComponent(previous_page)}`}
           className="block border rounded-2xl shadow-sm hover:shadow-lg transition p-4 text-green-600"
         >
           <div className="flex flex-col md:flex-row gap-4 items-center">

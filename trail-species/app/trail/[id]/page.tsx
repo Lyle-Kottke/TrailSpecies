@@ -10,6 +10,7 @@ import {getCustomTrailById} from "@/utils/supabase/getUserCustomTrails_client";
 import { url } from "inspector/promises";
 import Link from "next/link";
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
+import { saveTrail } from "@/utils/supabase/userSavedInfo";
 
 export default function TrailPage() {
   const params = useParams();
@@ -27,6 +28,12 @@ export default function TrailPage() {
   // convert to string for back link
   const paramsString = searchParams ? `?${searchParams.toString()}` : "";
   
+  async function handleSaveTrail() {
+    const res = await saveTrail(trail.name)
+    console.log("Saved trail:", res) 
+    alert("Search saved!")
+  }
+
   useEffect(() => {
     async function fetchTrail() {
       if (!id) return;
@@ -181,13 +188,21 @@ useEffect(() => {
   return (
     <div className="p-8">
       <Link
-        href={ is_custom_trail ? `${previous_page}` : `${previous_page}${paramsString}`}
+        href={ previous_page !== "/results" ? `${previous_page}` : `${previous_page}${paramsString}`}
         className="text-green-600 hover:underline"
       >
         ← Back to results
       </Link>
-
-      <h1 className="text-3xl font-bold mt-4">{trail.name}</h1>
+      <div className="flex flex-col md:flex-row md:items-center justify-center w-full gap-4">
+        <h1 className="text-3xl font-bold mt-4">{trail.name}</h1>
+        <button
+          onClick={handleSaveTrail}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Save Trail
+        </button>
+      </div>
+        
       <p className="text-gray-500 mb-6">{trail?.trailtype}</p>
 
       <h2 className="text-2xl font-semibold mb-4">Map</h2>
