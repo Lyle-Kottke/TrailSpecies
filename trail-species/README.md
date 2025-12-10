@@ -10,7 +10,11 @@ TrailSpecies is a trail web app that allows the user to identify potential speci
 **IMPORTANT NOTE**: There will be a **50 second delay** when fetching initially, due to Render Hosting Services "waking up" the hosted backend service, as it sleeps when not in use. 
 After this delay, the fetches work at normal speed. We hoped to improve this, but this is a feature of Render Hosting Service's free tier. 
 
-Contributions:  
+##! Seperate Repository for Geological Functions##
+The functions for the backend that have to do with geological data are located at https://github.com/natkai2040/TrailGeoAPI
+This is because Render Hosting Services deploys FastAPI applications from a single github repository, so we had to make a seperate repository for this. 
+
+##Contributions:##
 Lyle-Kottke: Frontend and presentation  
 CharlesLiu-Umass: Data acquisition, iNaturalist script  
 Natkai2040: Backend, API endpoints, presentation  
