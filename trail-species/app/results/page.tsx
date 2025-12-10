@@ -2,7 +2,6 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import PublicTrailList from "@/components/publicTrailList";
 import {saveUserSearch} from "@/utils/supabase/userSavedInfo";
 
@@ -16,9 +15,6 @@ export default function ResultsPage() {
 
   console.log("excludeNames", excludeNames)
   console.log("includeNames", includeNames)
-
-  // const [includeIds, setIncludeIds] = useState<string[]>([]);
-  // const [excludeIds, setExcludeIds] = useState<string[]>([]);
 
   const [filteredTrails, setFilteredTrails] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,7 +33,7 @@ export default function ResultsPage() {
     alert("Search saved!")
   }
 
-  useEffect(() => {
+  useEffect(() => { // fetch all params on load
     const q = searchParams.get("query") || "";
     const currentMonth = new Date().getMonth() + 1;
 
@@ -47,14 +43,14 @@ export default function ResultsPage() {
     const i_ids = i_params ? i_params.split(",") : [];
     const e_ids = e_params ? e_params.split(",") : [];
 
-    const i_names = (searchParams.get("include_names") || "")
+    const i_names = (searchParams.get("include_names") || "") // get included species names, decoding URI components (replaced spaces, symbols etc.)
       .split(",")
       .map(decodeURIComponent);
     const e_names = (searchParams.get("exclude_names") || "")
       .split(",")
       .map(decodeURIComponent);
 
-    const extendedSearchParams = new URLSearchParams({
+    const extendedSearchParams = new URLSearchParams({ // build params for fetch request
       q: q,
       current_month: currentMonth.toString(),
       include_ids: i_ids.join(","),
@@ -68,20 +64,16 @@ export default function ResultsPage() {
     if (e_names.length > 0 && e_names[0] != "") {
       setExcludeNames(e_names);
     }
-    // setIncludeIds(i_ids);
-    // setExcludeIds(e_ids);
 
     // if (!q) {
     //   setFilteredTrails([]);
     //   return;
     // }
 
-    setLoading(true);
+    setLoading(true); // end loading
     setError(null);
-
-    console.log(`URL: https://trailgeoapi.onrender.com/extended_trail_search?${extendedSearchParams.toString()}`)
     
-    fetch(`https://trailgeoapi.onrender.com/extended_trail_search?${extendedSearchParams.toString()}`)
+    fetch(`https://trailgeoapi.onrender.com/extended_trail_search?${extendedSearchParams.toString()}`) // search the microservice
         .then(async (res) => {
         if (!res.ok) {
           const msg = await res.text();
@@ -90,7 +82,6 @@ export default function ResultsPage() {
         return res.json();
       })
       .then((data) => {
-        // data.results is your array of trails
         const results = data.results || [];
 
         const uniqueTrails: typeof results = [];
@@ -101,7 +92,6 @@ export default function ResultsPage() {
             uniqueTrails.push(trail);
           }
         }
-
         setFilteredTrails(uniqueTrails);
       })
       .catch((err) => {
@@ -109,11 +99,10 @@ export default function ResultsPage() {
         setError(err.message);
       })
       .finally(() => setLoading(false));
-  }, [searchParams]);
+  }, [searchParams]); // update whenever searchParams change
 
   return (
     <div className="flex flex-col items-center p-8 space-y-6">
-      {/* Back button */}
       <button
         onClick={() => router.push("/")}
         className="self-start text-green-600 hover:underline"
@@ -135,7 +124,6 @@ export default function ResultsPage() {
       {includeNames.length > 0 && (
         <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-700">
           <div className="text-green-300 font-semibold mb-2">Included Species</div>
-          {/*Size of box*/}
           <div className="flex flex-wrap gap-2 min-w-[250px] max-w-md">
             {includeNames.map((name) => (
               <span
@@ -173,7 +161,7 @@ export default function ResultsPage() {
       ) : (
         <PublicTrailList
           trails={filteredTrails}
-          searchParams={searchParams} // this is the full URLSearchParams object
+          searchParams={searchParams} // to be saved as a custom search/redirect back to saved page.
           baseHref="/trail"
           previous_page="/results"
         />

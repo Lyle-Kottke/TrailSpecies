@@ -2,6 +2,7 @@ import TrailsList from "@/components/customTrailsList";
 import { getUser } from "@/utils/supabase/getUser"
 import { getUserCustomTrails } from "@/utils/supabase/getUserCustomTrails";
 
+// user trails created by logged-in user
 export default async function User_Custom_Trails() {
   const user = await getUser();
 

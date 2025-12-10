@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation'
-// Since you're calling Supabase from a Server Component, use the client created in @/utils/supabase/server.ts.
 
 import { createClient } from '@/utils/supabase/server'
-
+// Template of page private to logged-in users
 export default async function PrivatePage() {
   const supabase = await createClient()
 

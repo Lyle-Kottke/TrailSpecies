@@ -1,15 +1,10 @@
-// Following https://supabase.com/docs/guides/auth/server-side/nextjs?router=app&queryGroups=router
-// Create a Route Handler for auth/confirm. When a user clicks their confirmation email link, exchange their secure code for an Auth token.
-
 import { type EmailOtpType } from '@supabase/supabase-js'
 import { type NextRequest } from 'next/server'
-
-// Since this is a Router Handler, use the Supabase client from @/utils/supabase/server.ts.
-
 
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
+// Use Supabase Auth to verify email confirmation
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const token_hash = searchParams.get('token_hash')
@@ -24,11 +19,9 @@ export async function GET(request: NextRequest) {
       token_hash,
     })
     if (!error) {
-      // redirect user to specified redirect URL or root of app
       redirect(next)
     }
   }
 
-  // redirect the user to an error page with some instructions
   redirect('/error')
 }

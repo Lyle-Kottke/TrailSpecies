@@ -1,10 +1,8 @@
-
-
 import TrailsList from "@/components/customTrailsList";
 import { getAllCustomTrails } from "@/utils/supabase/getUserCustomTrails";
 
 export default async function Community_Trails() {
-
+  // fetch all custom trails from Supabase
   const trails = await getAllCustomTrails();
 
   return (

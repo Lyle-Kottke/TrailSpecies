@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getUserSearches, getUserSavedTrails } from '@/utils/supabase/userSavedInfo';
 import PublicTrailList from '@/components/publicTrailList';
+
+// stores saved searches and saved trails
 export default function SavedSearchesPage() {
     const [searches, setSearches] = useState<any[]>([]);
     const [savedTrails, setSavedTrails] = useState<any[]>([]);
@@ -26,8 +28,6 @@ export default function SavedSearchesPage() {
 
         fetchSearches();
     }, []);
-
-
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;

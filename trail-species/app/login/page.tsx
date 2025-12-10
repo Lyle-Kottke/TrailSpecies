@@ -2,17 +2,17 @@
 
 import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { login, signup } from './actions'
+import { login, signup } from './actions'  // supabase Auth handles login and signup
 
 export default function LoginPage() {
   const router = useRouter()
-
+  
   const [loginState, loginAction] = useActionState(login, { error: null, success: false })
   const [signupState, signupAction] = useActionState(signup, { error: null, success: false })
 
   useEffect(() => {
     if (loginState.success) {
-      router.push('/')        // ⬅️ redirect here
+      router.push('/')       
     }
   }, [loginState.success, router])
 
@@ -47,8 +47,7 @@ export default function LoginPage() {
             <input id="password" name="password" type="password" required style={styles.input} />
           </div>
 
-          {/* LOGIN ERROR */}
-          {loginState.error && (
+          {loginState.error && ( // show sign up error
             <p style={{ color: 'red', fontSize: '14px', marginTop: '-12px' }}>
               {loginState.error}
             </p>
@@ -57,7 +56,7 @@ export default function LoginPage() {
           <div style={styles.buttonGroup}>
             <button
               formAction={loginAction}
-              onClick={clearSignupError}     // 🔥 clears signup errors when logging in
+              onClick={clearSignupError}   // Clear errors when logging in
               style={styles.primaryButton}
             >
               Log in
@@ -65,14 +64,13 @@ export default function LoginPage() {
 
             <button
               formAction={signupAction}
-              onClick={clearLoginError}      // 🔥 clears login errors when signing up
+              onClick={clearLoginError}   // Clear errors when signing up
               style={styles.secondaryButton}
             >
               Sign up
             </button>
 
-            {/* SIGNUP ERROR */}
-            {signupState.error && (
+            {signupState.error && ( // show sign up error
               <p style={{ color: 'red', fontSize: '14px' }}>
                 {signupState.error}
               </p>

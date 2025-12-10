@@ -42,7 +42,7 @@ export default function TrailPage() {
       setError(null);
 
       try {
-        if (!is_custom_trail) {
+        if (!is_custom_trail) { // is a public trail, fetch from geoap
           const res = await fetch(
                     `https://trailgeoapi.onrender.com/trails_by_name?name=${encodeURIComponent(id)}`
                   );
@@ -67,7 +67,7 @@ export default function TrailPage() {
             lengthmiles: props.lengthmiles,
             geometry: geojson,
           });
-        } else { // is custom trail
+        } else { // is custom trail, fetch from supabase
           const res = await getCustomTrailById(id);
         
           console.log("res", JSON.stringify(res))
@@ -94,7 +94,7 @@ export default function TrailPage() {
   }, [id]);
 
 
-useEffect(() => {
+useEffect(() => { // fetch species when trail is loaded
   if (!trail) return;
 
   const fetchSpecies = async () => {
@@ -128,7 +128,7 @@ useEffect(() => {
       const imageArray = Object.values(data["taxon.default_photo.medium_url"]) as string[];
       const commnameArray = Object.values(data["taxon.preferred_common_name"])
 
-      //convert array into structured objects
+      // build spcies array
       const baseSpecies = speciesArray.map((s, i) => ({
         id: i + 1,
         name: s,
@@ -137,11 +137,12 @@ useEffect(() => {
         common_name: commnameArray[i] || s
       }));
 
-      //remove dupes
+      //filter out duplicate species
       const uniqueSpecies = baseSpecies.filter(
         (s, idx, self) => idx === self.findIndex(t => t.name === s.name)
       );
-      //wiki lookup for each species
+
+      // search wikipedia for species descriptions
       const enrichedSpecies = await Promise.all(
         uniqueSpecies.map(async (sp) => {
           try {
@@ -151,17 +152,13 @@ useEffect(() => {
               )}`
             );
 
-            if (!wikiRes.ok) return sp; //fallback
+            if (!wikiRes.ok) return sp; 
 
             const wikiData = await wikiRes.json();
 
             return {
               ...sp,
               description: wikiData.extract || "",
-              // image:
-              //   wikiData.originalimage?.source ||
-              //   wikiData.thumbnail?.source ||
-              //   "",
             };
           } catch (err) {
             console.warn("Wikipedia lookup failed:", sp.name, err);
@@ -182,7 +179,6 @@ useEffect(() => {
 
   if (!trail) return <p className="p-8 text-red-600">Trail not found</p>;
 
-  //Captialize helper
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
   return (

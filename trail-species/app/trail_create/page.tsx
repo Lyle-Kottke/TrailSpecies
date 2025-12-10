@@ -18,8 +18,6 @@ export default function DrawPage() {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const drawRef = useRef<MapboxDraw | null>(null);
 
-  //lines that the user draws will be saved to the variable geometry
-
   const [geometry, setGeometry] = useState(null); // Feature JSON
   const [trailName, setTrailName] = useState("Unnamed Trail"); // Default trail name
 
@@ -57,7 +55,7 @@ export default function DrawPage() {
       displayControlsDefault: false,
       controls: {line_string: true, trash: true},
       styles: [
-        {/*Style of active lines */
+        {/* active lines (dotted, thick) */
           id: 'gl-draw-line-active',
           type: 'line',
           filter: ['all', ['==', '$type', 'LineString'], ['==', 'active', 'true']],
@@ -67,7 +65,7 @@ export default function DrawPage() {
             'line-dasharray': [2, 1]
           }
         },
-        {/*Style of inactive lines */
+        {/*Style of inactive lines (thin)*/
           id: 'gl-draw-line-inactive',
           type: 'line',
           filter: ['all', ['==', '$type', 'LineString'], ['==', 'active', 'false']],
@@ -93,7 +91,7 @@ export default function DrawPage() {
           }
         },
 
-        {/*Non-Active Point styling */
+        {/* non active points (smaller)*/
           id: "gl-draw-vertex-point",
           type: "circle",
           filter: [
@@ -167,13 +165,11 @@ export default function DrawPage() {
     </div>
 
     <div className="trail_create">
-      {/* Map */}
       <div 
         ref={mapContainerRef} 
         className="w-full mx-auto rounded-xl overflow-hidden border border-gray-700"
-        style={{ height: "75vh" }}  // height of screen in % 
+        style={{ height: "75vh" }} 
       />
-      {/* Save Button */}
       <button
         className="save-btn"
         onClick={saveTrail}>

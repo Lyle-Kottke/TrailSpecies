@@ -113,7 +113,7 @@ export default function HomePage() {
       {/*Species search bar*/}
       <SpeciesSearch
         onInclude={(taxon) => {
-          if (includeSpecies.some(s => s.id === taxon.id)) return; //Logic here to make sure user doesn't add multiple copies of a taxon
+          if (includeSpecies.some(s => s.id === taxon.id)) return;
           setIncludeSpecies(prev => [...prev, taxon])
           setExcludeSpecies(prev => prev.filter(s=>s.id !== taxon.id)); //If a species that already exists in the opposite box is added to this box, remove it from opposite box
         }}
@@ -149,10 +149,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Excluded */}
         <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-700">
           <div className="text-red-300 font-semibold mb-2">Excluded Species</div>
-          {/*Size of box*/}
           <div className="flex flex-wrap gap-2 min-w-[250px] max-w-md">
             {excludeSpecies.map((taxon) => (
               <span
@@ -181,7 +179,6 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Custom Trail Button */}
       <button
         onClick={() => router.push("/trail_create")}
         className="mt-10 bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition">
